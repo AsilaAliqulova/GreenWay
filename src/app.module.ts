@@ -14,11 +14,15 @@ import { ChallengesModule } from './challenges/challenges.module';
 import { ParticipationsModule } from './participations/participations.module';
 import { LikeModule } from './like/like.module';
 import { CommentsModule } from './comments/comments.module';
+import { CoinModule } from './coin/coin.module';
+import { OrderModule } from './order/order.module';
+import { ProductModule } from './product/product.module';
+import { DeliveryModule } from './delivery/delivery.module';
 
 
 
 @Module({
-  imports:[ConfigModule.forRoot({envFilePath: ".env", isGlobal:true}),PrismaModule, AdminModule, UserModule, OrganizationModule, ContentModule, MediaModule, EcoReportModule, VotesModule, UserVotesModule, EventModule, ChallengesModule, ParticipationsModule, LikeModule, CommentsModule],
+  imports:[ConfigModule.forRoot({envFilePath: ".env", isGlobal:true}),PrismaModule, AdminModule, UserModule, OrganizationModule, ContentModule, MediaModule, EcoReportModule, VotesModule, UserVotesModule, EventModule, ChallengesModule, ParticipationsModule, LikeModule, CommentsModule, CoinModule, OrderModule, ProductModule, DeliveryModule],
   controllers: [],
   providers: [],
 })
