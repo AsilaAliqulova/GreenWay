@@ -266,6 +266,7 @@ model Region {
   name String
 
   district District[]
+  @@map("region")
 }
 
 model District {
