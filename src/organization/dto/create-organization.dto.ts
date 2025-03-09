@@ -18,19 +18,19 @@ export class CreateOrganizationDto {
     @IsNotEmpty()
     description: string;
 
-    @ApiProperty({ description: 'Phone number of the organization', example: '+998991234567' })
+    @ApiProperty({  example: '+998991234567' })
     @IsString()
     phone: string;
 
-    @ApiProperty({ description: 'Email address of the organization', example: 'contact@greenway.org' })
+    @ApiProperty({  example: 'contact@greenway.org' })
     @IsEmail()
     email: string;
 
-    @ApiProperty({ description: 'Website URL of the organization', example: 'https://greenway.org' })
+    @ApiProperty({ example: 'https://greenway.org' })
     @IsOptional()
     website?: string|null
 
-    @ApiProperty({ description: 'Social media links in JSON format', example: '{"facebook": "https://fb.com/greenway", "twitter": "https://twitter.com/greenway"}' })
+    @ApiProperty({  example: '{"facebook": "https://fb.com/greenway", "twitter": "https://twitter.com/greenway"}' })
     @IsString()
     @IsOptional()
     socials?: string|null

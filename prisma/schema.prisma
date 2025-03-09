@@ -121,7 +121,7 @@ model UserVotes {
   userId      Int
   votesId     Int
   vote        String
-  description String
+  description String?
   createdAt   DateTime @default(now())
   updated     DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
