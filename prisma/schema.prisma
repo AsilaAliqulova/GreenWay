@@ -162,14 +162,14 @@ model Challenges {
 model Participations {
   id              Int        @id @default(autoincrement())
   userId          Int
-  eventId         Int
-  challengesId    Int
+  eventId         Int?
+  challengesId    Int?
   certificate_url String
   createdAt       DateTime   @default(now())
   updated         DateTime   @updatedAt
   user            User       @relation(fields: [userId], references: [id])
-  challenges      Challenges @relation(fields: [challengesId], references: [id])
-  event           Event      @relation(fields: [eventId], references: [id])
+  challenges      Challenges? @relation(fields: [challengesId], references: [id])
+  event           Event?      @relation(fields: [eventId], references: [id])
 
   @@map("participations")
 }
@@ -182,6 +182,8 @@ model Like {
   updated     DateTime  @updatedAt
   user        User      @relation(fields: [userId], references: [id])
   ecoReport   EcoReport @relation(fields: [ecoReportId], references: [id])
+
+  @@map("like")
 }
 
 model Comments {
@@ -193,6 +195,7 @@ model Comments {
   updated     DateTime  @updatedAt
   user        User      @relation(fields: [userId], references: [id])
   ecoReport   EcoReport @relation(fields: [ecoReportId], references: [id])
+  @@map("comments")
 }
 
 model Coins {
