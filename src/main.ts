@@ -16,18 +16,21 @@ async function start() {
         const allowedOrigins = [
           "http://localhost:8000",
           "http://localhost:3000",
-          "http://skidkachi.uz",
-          "http://api.skidkachi.uz",
-          "http://skidkachi.vercal.app",
+          "https://ecoway.uz",
+          "http://api.ecoway.uz",
+          "https://ecoway.vercal.app",
         ];
         if (!origin || allowedOrigins.includes(origin)) {
+          console.log(origin);
+          
           callback(null, true);
+
         } else {
           callback(new BadRequestException("Not allowed by CORS"));
         }
       },
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      credentials: true, //cookie va header
+      credentials: true,
     });
 
     const config = new DocumentBuilder()
@@ -42,16 +45,16 @@ async function start() {
         },
         "authorization"
       )
-      .setTitle("Cats example")
-      .setDescription("The cats API description")
+      .setTitle("GreenWay example")
+      .setDescription("The GreenWay API description")
       .setVersion("1.0")
-      .addTag("cats")
+      .addTag("GreenWay")
       .build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup("api", app, documentFactory);
 
     await app.listen(PORT, () => {
-      console.log(`Server is runnning at http://localhost:${PORT}`);
+      console.log(`Server is runnning at http://localhost:${PORT}/api`);
     });
   } catch (error) {
     console.log(error.message);

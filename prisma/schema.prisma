@@ -13,4 +13,293 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  id        Int       @id @default(autoincrement())
+  fullname  String
+  phone     String
+  email     String
+  image_url String
+  password  String
+  token     String
+  content   Content[]
 
+  @@map("admin")
+}
+
+model User {
+  id             Int              @id @default(autoincrement())
+  fullname       String
+  phone          String
+  email          String
+  image_url      String
+  password       String
+  token          String
+  ecoReport      EcoReport[]
+  userVotes      UserVotes[]
+  participations Participations[]
+  like           Like[]
+  comments       Comments[]
+  coins          Coins[]
+  order          Order[]
+
+  @@map("user")
+}
+
+model Organization {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  phone       String
+  email       String
+  website     String?
+  socials     String?
+  votes       Votes[]
+  event       Event[]
+  challenges  Challenges[]
+
+  @@map("organization")
+}
+
+model Content {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  mediaId     Int
+  adminId     Int
+  createdAt   DateTime @default(now())
+  updated     DateTime @updatedAt
+  admin       Admin    @relation(fields: [adminId], references: [id])
+  media       Media    @relation(fields: [mediaId], references: [id])
+
+  @@map("content")
+}
+
+model Media {
+  id        Int         @id @default(autoincrement())
+  url       String
+  type      String
+  createdAt DateTime    @default(now())
+  updated   DateTime    @updatedAt
+  content   Content[]
+  ecoReport EcoReport[]
+
+  @@map("media")
+}
+
+model EcoReport {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  mediaId     Int
+  userId      Int
+  createdAt   DateTime   @default(now())
+  updated     DateTime   @updatedAt
+  user        User       @relation(fields: [userId], references: [id])
+  media       Media      @relation(fields: [mediaId], references: [id])
+  like        Like[]
+  comments    Comments[]
+
+  @@map("eco_report")
+}
+
+model Votes {
+  id             Int      @id @default(autoincrement())
+  title          String
+  description    String
+  createdAt      DateTime @default(now())
+  endDate        DateTime
+  organizationId Int
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  userVotes    UserVotes[]
+
+  @@map("votes")
+}
+
+model UserVotes {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  votesId     Int
+  vote        String
+  description String
+  createdAt   DateTime @default(now())
+  updated     DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+  votes       Votes    @relation(fields: [votesId], references: [id])
+
+  @@map("user_votes")
+}
+
+model Event {
+  id             Int              @id @default(autoincrement())
+  title          String
+  description    String
+  image_url      String
+  organizationId Int
+  createdAt      DateTime         @default(now())
+  updated        DateTime         @updatedAt
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  participations Participations[]
+
+  @@map("event")
+}
+
+model Challenges {
+  id             Int              @id @default(autoincrement())
+  title          String
+  description    String
+  image_url      String
+  organizationId Int
+  deadline       DateTime
+  createdAt      DateTime         @default(now())
+  updated        DateTime         @updatedAt
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  participations Participations[]
+
+  @@map("challenges")
+}
+
+model Participations {
+  id              Int        @id @default(autoincrement())
+  userId          Int
+  eventId         Int
+  challengesId    Int
+  certificate_url String
+  createdAt       DateTime   @default(now())
+  updated         DateTime   @updatedAt
+  user            User       @relation(fields: [userId], references: [id])
+  challenges      Challenges @relation(fields: [challengesId], references: [id])
+  event           Event      @relation(fields: [eventId], references: [id])
+
+  @@map("participations")
+}
+
+model Like {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  ecoReportId Int
+  createdAt   DateTime  @default(now())
+  updated     DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id])
+  ecoReport   EcoReport @relation(fields: [ecoReportId], references: [id])
+}
+
+model Comments {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  ecoReportId Int
+  text        String
+  createdAt   DateTime  @default(now())
+  updated     DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id])
+  ecoReport   EcoReport @relation(fields: [ecoReportId], references: [id])
+}
+
+model Coins {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+  updated   DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  total_price Float
+  status      String
+  createdAt   DateTime     @default(now())
+  updated     DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id])
+  orderItems  OrderItems[]
+  delivery    Delivery[]
+}
+
+model OrderItems {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  createdAt DateTime @default(now())
+  updated   DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Product {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  image_url   String
+  createdAt   DateTime     @default(now())
+  updated     DateTime     @updatedAt
+  orderItems  OrderItems[]
+}
+
+model Delivery {
+  id              Int      @id @default(autoincrement())
+  orderId         Int
+  address         String
+  delivery_method String
+  delivery_status String
+  delivery_date   DateTime
+  delivery_cost   Float
+  createdAt       DateTime @default(now())
+  updated         DateTime @updatedAt
+  order           Order    @relation(fields: [orderId], references: [id])
+}
+
+model Region {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  district District[]
+}
+
+model District {
+  id             Int              @id @default(autoincrement())
+  name           String
+  regionId       Int
+  region         Region           @relation(fields: [regionId], references: [id])
+  airPollution   AirPollution[]
+  waterPollution WaterPollution[]
+  soilPollution  SoilPollution[]
+
+  @@map("district")
+}
+
+model AirPollution {
+  id               Int      @id @default(autoincrement())
+  districtId       Int
+  pollution_leavel String
+  pollutions       String
+  date             DateTime
+  district         District @relation(fields: [districtId], references: [id])
+
+  @@map("air_pollution")
+}
+
+model WaterPollution {
+  id               Int      @id @default(autoincrement())
+  districtId       Int
+  pollution_leavel String
+  pollutions       String
+  date             DateTime
+  district         District @relation(fields: [districtId], references: [id])
+
+  @@map("water_pollution")
+}
+
+model SoilPollution {
+  id               Int      @id @default(autoincrement())
+  districtId       Int
+  pollution_leavel String
+  pollutions       String
+  date             DateTime
+  district         District @relation(fields: [districtId], references: [id])
+
+  @@map("soil_pollution")
+}
