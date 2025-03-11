@@ -177,25 +177,6 @@ export class AuthService {
       resfresh_token: refreshToken,
     };
   }
-
-  async signUpAdmin(createAdminDto: CreateAdminDto) {
-    const candidate = await this.adminService.findAdminByEmail(
-      createAdminDto.email
-    );
-
-    if (candidate) {
-      throw new BadRequestException("there is such a admin");
-    }
-
-    const newAdmin = await this.adminService.create(createAdminDto);
-    const response = {
-      message: "Congratulations you joined the system.",
-      userId: newAdmin.id,
-    };
-
-    return response;
-  }
-
   async signInAdmin(signInDtoAdmin: SignInAdminDto, res: Response) {
     
     const { password } = signInDtoAdmin;
@@ -230,7 +211,25 @@ export class AuthService {
     return response;
   }
 
-  async signOutAdmin(refreshToken: string, res: Response) {
+  // async signUpAdmin(createAdminDto: CreateAdminDto) {
+  //   const candidate = await this.adminService.findAdminByEmail(
+  //     createAdminDto.email
+  //   );
+
+  //   if (candidate) {
+  //     throw new BadRequestException("there is such a admin");
+  //   }
+
+  //   const newAdmin = await this.adminService.create(createAdminDto);
+  //   const response = {
+  //     message: "Congratulations you joined the system.",
+  //     userId: newAdmin.id,
+  //   };
+
+  //   return response;
+  // }
+
+   async signOutAdmin(refreshToken: string, res: Response) {
     const userData = await this.jwtServise.verify(refreshToken, {
       secret: process.env.REFRESH_TOKEN_KEY_ADMIN,
     });
