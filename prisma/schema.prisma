@@ -14,26 +14,31 @@ datasource db {
 }
 
 model Admin {
-  id        Int       @id @default(autoincrement())
-  fullname  String
-  phone     String
-  email     String
-  image_url String
-  password  String
-  token     String
-  content   Content[]
+  id             Int     @id @default(autoincrement())
+  fullname       String
+  phone          String
+  email          String  @unique
+  hashedPassword String
+  hashedToken    String?
+
+  is_creator Boolean @default(false)
+
+  content Content[]
 
   @@map("admin")
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  fullname       String
-  phone          String
-  email          String
-  image_url      String
-  password       String
-  token          String
+  id              Int     @id @default(autoincrement())
+  fullname        String
+  phone           String
+  email           String  @unique
+  image_url       String
+  hashedPassword  String
+  hashedToken     String?
+  is_active       Boolean @default(false)
+  // activation_link String
+
   ecoReport      EcoReport[]
   userVotes      UserVotes[]
   participations Participations[]
@@ -43,6 +48,15 @@ model User {
   order          Order[]
 
   @@map("user")
+}
+
+model Otp {
+  id              Int      @id @default(autoincrement())
+  phone           String
+  otp             String
+  expiration_time DateTime
+  verified        Boolean  @default(false)
+  @@map("otp")
 }
 
 model Organization {
@@ -107,7 +121,7 @@ model Votes {
   title          String
   description    String
   createdAt      DateTime @default(now())
-  endDate        DateTime
+  endDate        String
   organizationId Int
 
   organization Organization @relation(fields: [organizationId], references: [id])
@@ -150,7 +164,7 @@ model Challenges {
   description    String
   image_url      String
   organizationId Int
-  deadline       DateTime
+  deadline       String
   createdAt      DateTime         @default(now())
   updated        DateTime         @updatedAt
   organization   Organization     @relation(fields: [organizationId], references: [id])
@@ -160,14 +174,14 @@ model Challenges {
 }
 
 model Participations {
-  id              Int        @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   userId          Int
   eventId         Int?
   challengesId    Int?
   certificate_url String
-  createdAt       DateTime   @default(now())
-  updated         DateTime   @updatedAt
-  user            User       @relation(fields: [userId], references: [id])
+  createdAt       DateTime    @default(now())
+  updated         DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id])
   challenges      Challenges? @relation(fields: [challengesId], references: [id])
   event           Event?      @relation(fields: [eventId], references: [id])
 
@@ -195,6 +209,7 @@ model Comments {
   updated     DateTime  @updatedAt
   user        User      @relation(fields: [userId], references: [id])
   ecoReport   EcoReport @relation(fields: [ecoReportId], references: [id])
+
   @@map("comments")
 }
 
@@ -206,6 +221,7 @@ model Coins {
   createdAt DateTime @default(now())
   updated   DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
+
   @@map("coin")
 }
 
@@ -219,6 +235,7 @@ model Order {
   user        User         @relation(fields: [userId], references: [id])
   orderItems  OrderItems[]
   delivery    Delivery[]
+
   @@map("order")
 }
 
@@ -244,6 +261,7 @@ model Product {
   createdAt   DateTime     @default(now())
   updated     DateTime     @updatedAt
   orderItems  OrderItems[]
+
   @@map("product")
 }
 
@@ -258,6 +276,7 @@ model Delivery {
   createdAt       DateTime @default(now())
   updated         DateTime @updatedAt
   order           Order    @relation(fields: [orderId], references: [id])
+
   @@map("delivery")
 }
 
@@ -266,6 +285,7 @@ model Region {
   name String
 
   district District[]
+
   @@map("region")
 }
 
@@ -286,7 +306,7 @@ model AirPollution {
   districtId       Int
   pollution_leavel String
   pollutions       String
-  date             DateTime
+  date             String
   district         District @relation(fields: [districtId], references: [id])
 
   @@map("air_pollution")
@@ -297,7 +317,7 @@ model WaterPollution {
   districtId       Int
   pollution_leavel String
   pollutions       String
-  date             DateTime
+  date             String
   district         District @relation(fields: [districtId], references: [id])
 
   @@map("water_pollution")
@@ -308,7 +328,7 @@ model SoilPollution {
   districtId       Int
   pollution_leavel String
   pollutions       String
-  date             DateTime
+  date             String
   district         District @relation(fields: [districtId], references: [id])
 
   @@map("soil_pollution")

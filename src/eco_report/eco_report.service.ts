@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EcoReportService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createEcoReportDto: CreateEcoReportDto) {
     try {
@@ -17,32 +17,24 @@ export class EcoReportService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.ecoReport.findMany({ 
-        include: { user: { select: { fullname: true } }, media: true } 
-      });
-    } catch (error) {
-      console.log("EcoReportService findAll error:", error);
-      throw new InternalServerErrorException('Failed to retrieve eco reports');
-    }
+    return await this.prismaService.ecoReport.findMany({
+      include: { user: { select: { fullname: true } }, media: true }
+    });
+
   }
 
   async findOne(id: number) {
-    try {
-      const ecoReport = await this.prismaService.ecoReport.findUnique({
-        where: { id },
-        include: { user: { select: { fullname: true } }, media: true }
-      });
+    const ecoReport = await this.prismaService.ecoReport.findUnique({
+      where: { id },
+      include: { user: { select: { fullname: true } }, media: true }
+    });
 
-      if (!ecoReport) {
-        throw new NotFoundException('Eco report not found');
-      }
-
-      return ecoReport;
-    } catch (error) {
-      console.log("EcoReportService findOne error:", error);
-      throw new InternalServerErrorException('Failed to retrieve eco report');
+    if (!ecoReport) {
+      throw new NotFoundException('Eco report not found');
     }
+
+    return ecoReport;
+
   }
 
   async update(id: number, updateEcoReportDto: UpdateEcoReportDto) {
@@ -56,12 +48,8 @@ export class EcoReportService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.ecoReport.delete({ where: { id } });
-    } catch (error) {
-      console.log("EcoReportService remove error:", error);
-      throw new InternalServerErrorException('Failed to delete eco report');
-    }
+    await this.findOne(id);
+    return await this.prismaService.ecoReport.delete({ where: { id } });
+
   }
 }

@@ -19,31 +19,22 @@ export class OrderService {
 
 
   async findAll() {
-    try {
-      return await this.prismaService.order.findMany({ include: { user: { select: { fullname: true, email: true } } } });
-    } catch (error) {
-      console.log("OrderService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve orders');
-    }
+    return await this.prismaService.order.findMany({ include: { user: { select: { fullname: true, email: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const order = await this.prismaService.order.findUnique({
-        where: { id },
-        include: { user: { select: { fullname: true, email: true } } }
-      });
+    const order = await this.prismaService.order.findUnique({
+      where: { id },
+      include: { user: { select: { fullname: true, email: true } } }
+    });
 
-      if (!order) {
-        throw new NotFoundException('order not found');
-      }
-
-      return order;
-    } catch (error) {
-      console.log("orderService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve order');
+    if (!order) {
+      throw new NotFoundException('order not found');
     }
+
+    return order;
+
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
@@ -58,13 +49,8 @@ export class OrderService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.order.delete({ where: { id } });
-    } catch (error) {
-      console.log("OrderService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.order.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete ordder');
-    }
   }
 }

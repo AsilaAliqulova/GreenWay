@@ -18,34 +18,25 @@ export class CoinService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.coins.findMany({ include: { user: { select: { fullname: true } } } });
-    } catch (error) {
-      console.log("CoinService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve coins');
-    }
+    return await this.prismaService.coins.findMany({ include: { user: { select: { fullname: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const coins = await this.prismaService.coins.findUnique({
-        where: { id },
-        include: { user: { select: { fullname: true } } }
-      });
+    const coins = await this.prismaService.coins.findUnique({
+      where: { id },
+      include: { user: { select: { fullname: true } } }
+    });
 
-      if (!coins) {
-        throw new NotFoundException('coins not found');
-      }
-
-      return coins;
-    } catch (error) {
-      console.log("coinsService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve coin');
+    if (!coins) {
+      throw new NotFoundException('coins not found');
     }
+
+    return coins;
+
   }
 
- async update(id: number, updateCoinDto: UpdateCoinDto) {
+  async update(id: number, updateCoinDto: UpdateCoinDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.coins.update({ where: { id }, data: { ...updateCoinDto } });
@@ -57,13 +48,8 @@ export class CoinService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.coins.delete({ where: { id } });
-    } catch (error) {
-      console.log("CoinsService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.coins.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete coin');
-    }
   }
 }

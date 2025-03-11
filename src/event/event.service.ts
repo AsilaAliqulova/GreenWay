@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EventService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createEventDto: CreateEventDto) {
     try {
@@ -17,32 +17,24 @@ export class EventService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.event.findMany({ 
-        include: { organization: { select: { name: true } } } 
-      });
-    } catch (error) {
-      console.log("EventService findAll error:", error);
-      throw new InternalServerErrorException('Failed to retrieve events');
-    }
+    return await this.prismaService.event.findMany({
+      include: { organization: { select: { name: true } } }
+    });
+
   }
 
   async findOne(id: number) {
-    try {
-      const event = await this.prismaService.event.findUnique({
-        where: { id },
-        include: { organization: { select: { name: true } } }
-      });
+    const event = await this.prismaService.event.findUnique({
+      where: { id },
+      include: { organization: { select: { name: true } } }
+    });
 
-      if (!event) {
-        throw new NotFoundException('Event not found');
-      }
-
-      return event;
-    } catch (error) {
-      console.log("EventService findOne error:", error);
-      throw new InternalServerErrorException('Failed to retrieve event');
+    if (!event) {
+      throw new NotFoundException('Event not found');
     }
+
+    return event;
+
   }
 
   async update(id: number, updateEventDto: UpdateEventDto) {
@@ -56,12 +48,8 @@ export class EventService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.event.delete({ where: { id } });
-    } catch (error) {
-      console.log("EventService remove error:", error);
-      throw new InternalServerErrorException('Failed to delete event');
-    }
+    await this.findOne(id);
+    return await this.prismaService.event.delete({ where: { id } });
+
   }
 }

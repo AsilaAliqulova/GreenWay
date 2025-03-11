@@ -18,16 +18,11 @@ export class WaterPollutionService {
   }
 
   async findAll() {
-    try {
       return await this.prismaService.waterPollution.findMany({ include: { district: { select: { name: true } } } });
-    } catch (error) {
-      console.log("waterPollutionService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve waterPollution');
-    }
+   
   }
 
   async findOne(id: number) {
-    try {
       const waterPollution = await this.prismaService.waterPollution.findUnique({
         where: { id },
         include: { district: { select: { name: true } } }
@@ -38,11 +33,7 @@ export class WaterPollutionService {
       }
 
       return waterPollution;
-    } catch (error) {
-      console.log("waterPollutionService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve waterPollution');
-    }
+   
   }
 
 
@@ -58,13 +49,8 @@ export class WaterPollutionService {
   }
 
   async remove(id: number) {
-    try {
       await this.findOne(id);
       return await this.prismaService.waterPollution.delete({ where: { id } });
-    } catch (error) {
-      console.log("waterPollutionsService remove:", error);
-
-      throw new InternalServerErrorException('Failed to delete waterPollution');
-    }
+    
   }
 }

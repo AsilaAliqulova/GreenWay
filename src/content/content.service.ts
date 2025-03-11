@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ContentService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createContentDto: CreateContentDto) {
     try {
@@ -17,32 +17,24 @@ export class ContentService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.content.findMany({ 
-        include: { admin: { select: { fullname: true } }, media: true } 
-      });
-    } catch (error) {
-      console.log("ContentService findAll:", error);
-      throw new InternalServerErrorException('Failed to retrieve content');
-    }
+    return await this.prismaService.content.findMany({
+      include: { admin: { select: { fullname: true } }, media: true }
+    });
+
   }
 
   async findOne(id: number) {
-    try {
-      const content = await this.prismaService.content.findUnique({
-        where: { id },
-        include: { admin: { select: { fullname: true } }, media: true }
-      });
+    const content = await this.prismaService.content.findUnique({
+      where: { id },
+      include: { admin: { select: { fullname: true } }, media: true }
+    });
 
-      if (!content) {
-        throw new NotFoundException('Content not found');
-      }
-
-      return content;
-    } catch (error) {
-      console.log("ContentService findOne:", error);
-      throw new InternalServerErrorException('Failed to retrieve content');
+    if (!content) {
+      throw new NotFoundException('Content not found');
     }
+
+    return content;
+
   }
 
   async update(id: number, updateContentDto: UpdateContentDto) {
@@ -56,12 +48,8 @@ export class ContentService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.content.delete({ where: { id } });
-    } catch (error) {
-      console.log("ContentService remove:", error);
-      throw new InternalServerErrorException('Failed to delete content');
-    }
+    await this.findOne(id);
+    return await this.prismaService.content.delete({ where: { id } });
+
   }
 }

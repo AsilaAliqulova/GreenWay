@@ -11,27 +11,27 @@ async function start() {
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe());
     app.setGlobalPrefix("api");
-    app.enableCors({
-      origin: (origin, callback) => {
-        const allowedOrigins = [
-          "http://localhost:8000",
-          "http://localhost:3000",
-          "https://ecoway.uz",
-          "http://api.ecoway.uz",
-          "https://ecoway.vercal.app",
-        ];
-        if (!origin || allowedOrigins.includes(origin)) {
-          console.log(origin);
+    // app.enableCors({
+    //   origin: (origin, callback) => {
+    //     const allowedOrigins = [
+    //       "http://localhost:8000",
+    //       "http://localhost:3000",
+    //       "https://ecoway.uz",
+    //       "http://api.ecoway.uz",
+    //       "https://ecoway.vercal.app",
+    //     ];
+    //     if (!origin || allowedOrigins.includes(origin)) {
+    //       console.log(origin);
           
-          callback(null, true);
+    //       callback(null, true,undefined);
 
-        } else {
-          callback(new BadRequestException("Not allowed by CORS"));
-        }
-      },
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      credentials: true,
-    });
+    //     } else {
+    //       callback(new BadRequestException("Not allowed by CORS"));
+    //     }
+    //   },
+    //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    //   credentials: true,
+    // });
 
     const config = new DocumentBuilder()
       .addBearerAuth(

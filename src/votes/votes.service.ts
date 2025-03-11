@@ -18,31 +18,22 @@ export class VotesService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.votes.findMany({ include: { organization: { select: { name: true } } } });
-    } catch (error) {
-      console.log("VotesService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve votes');
-    }
+    return await this.prismaService.votes.findMany({ include: { organization: { select: { name: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const votes = await this.prismaService.votes.findUnique({
-        where: { id },
-        include: { organization: { select: { name: true } } }
-      });
+    const votes = await this.prismaService.votes.findUnique({
+      where: { id },
+      include: { organization: { select: { name: true } } }
+    });
 
-      if (!votes) {
-        throw new NotFoundException('Votes not found');
-      }
-
-      return votes;
-    } catch (error) {
-      console.log("VotesService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve vote');
+    if (!votes) {
+      throw new NotFoundException('Votes not found');
     }
+
+    return votes;
+
   }
 
   async update(id: number, updateVoteDto: UpdateVoteDto) {
@@ -57,13 +48,8 @@ export class VotesService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.votes.delete({ where: { id } });
-    } catch (error) {
-      console.log("VotesService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.votes.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete vote');
-    }
   }
 }

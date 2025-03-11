@@ -7,45 +7,36 @@ import { PrismaService } from '../prisma/prisma.service';
 export class RegionService {
   constructor(private readonly prismaService: PrismaService) { }
 
-async  create(createRegionDto: CreateRegionDto) {
-  try {
-    return await this.prismaService.region.create({ data: { ...createRegionDto } });
-  } catch (error) {
-    console.log("RegionService create:", error);
+  async create(createRegionDto: CreateRegionDto) {
+    try {
+      return await this.prismaService.region.create({ data: { ...createRegionDto } });
+    } catch (error) {
+      console.log("RegionService create:", error);
 
-    throw new InternalServerErrorException('Failed to create region');
-  }
+      throw new InternalServerErrorException('Failed to create region');
+    }
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.region.findMany({ include: { district: { select: { name: true } } } });
-    } catch (error) {
-      console.log("RegionService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve region');
-    }
+    return await this.prismaService.region.findMany({ include: { district: { select: { name: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const region = await this.prismaService.region.findUnique({
-        where: { id },
-        include: { district: { select: { name: true } } }
-      });
+    const region = await this.prismaService.region.findUnique({
+      where: { id },
+      include: { district: { select: { name: true } } }
+    });
 
-      if (!region) {
-        throw new NotFoundException('Region not found');
-      }
-
-      return region;
-    } catch (error) {
-      console.log("RegionService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve region');
+    if (!region) {
+      throw new NotFoundException('Region not found');
     }
+
+    return region;
+
   }
 
-async  update(id: number, updateRegionDto: UpdateRegionDto) {
+  async update(id: number, updateRegionDto: UpdateRegionDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.region.update({ where: { id }, data: { ...updateRegionDto } });
@@ -57,13 +48,8 @@ async  update(id: number, updateRegionDto: UpdateRegionDto) {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.region.delete({ where: { id } });
-    } catch (error) {
-      console.log("RegionsService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.region.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete region');
-    }
   }
 }

@@ -31,4 +31,9 @@ export class AdminController {
   remove(@Param('id') id: string) {
     return this.adminService.remove(+id);
   }
+
+  @Get("/email:email")
+  findUserByEmail(@Body("email") email: string) {
+    return this.adminService.findAdminByEmail(email);
+  }
 }

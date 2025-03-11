@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createMediaDto: CreateMediaDto) {
     try {
@@ -17,32 +17,24 @@ export class MediaService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.media.findMany({ 
-        include: { content: true, ecoReport: { select: { title: true } } } 
-      });
-    } catch (error) {
-      console.log("MediaService findAll error:", error);
-      throw new InternalServerErrorException('Failed to retrieve media');
-    }
+    return await this.prismaService.media.findMany({
+      include: { content: true, ecoReport: { select: { title: true } } }
+    });
+
   }
 
   async findOne(id: number) {
-    try {
-      const media = await this.prismaService.media.findUnique({
-        where: { id },
-        include: { content: true, ecoReport: { select: { title: true } } }
-      });
+    const media = await this.prismaService.media.findUnique({
+      where: { id },
+      include: { content: true, ecoReport: { select: { title: true } } }
+    });
 
-      if (!media) {
-        throw new NotFoundException('Media not found');
-      }
-
-      return media;
-    } catch (error) {
-      console.log("MediaService findOne error:", error);
-      throw new InternalServerErrorException('Failed to retrieve media');
+    if (!media) {
+      throw new NotFoundException('Media not found');
     }
+
+    return media;
+
   }
 
   async update(id: number, updateMediaDto: UpdateMediaDto) {
@@ -56,12 +48,8 @@ export class MediaService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.media.delete({ where: { id } });
-    } catch (error) {
-      console.log("MediaService remove error:", error);
-      throw new InternalServerErrorException('Failed to delete media');
-    }
+    await this.findOne(id);
+    return await this.prismaService.media.delete({ where: { id } });
+
   }
 }

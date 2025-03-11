@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ChallengesService {
   constructor(private readonly prismaService: PrismaService) { }
 
- async create(createChallengeDto: CreateChallengeDto) {
+  async create(createChallengeDto: CreateChallengeDto) {
     try {
       return await this.prismaService.challenges.create({ data: { ...createChallengeDto } });
     } catch (error) {
@@ -18,34 +18,26 @@ export class ChallengesService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.challenges.findMany({ include: { organization: { select: { name: true } } } });
-    } catch (error) {
-      console.log("ChallengesService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve challenges');
-    }
+
+    return await this.prismaService.challenges.findMany({ include: { organization: { select: { name: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const challenges = await this.prismaService.challenges.findUnique({
-        where: { id },
-        include: { organization: { select: { name: true } } }
-      });
+    const challenges = await this.prismaService.challenges.findUnique({
+      where: { id },
+      include: { organization: { select: { name: true } } }
+    });
 
-      if (!challenges) {
-        throw new NotFoundException('Challenges not found');
-      }
-
-      return challenges;
-    } catch (error) {
-      console.log("ChallengesService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve challenges');
+    if (!challenges) {
+      throw new NotFoundException('Challenges not found');
     }
+
+    return challenges;
+
   }
 
- async update(id: number, updateChallengeDto: UpdateChallengeDto) {
+  async update(id: number, updateChallengeDto: UpdateChallengeDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.challenges.update({ where: { id }, data: { ...updateChallengeDto } });
@@ -56,14 +48,9 @@ export class ChallengesService {
     }
   }
 
- async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.challenges.delete({ where: { id } });
-    } catch (error) {
-      console.log("ChallengesService remove:", error);
+  async remove(id: number) {
+    await this.findOne(id);
+    return await this.prismaService.challenges.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete challenges');
-    }
   }
 }

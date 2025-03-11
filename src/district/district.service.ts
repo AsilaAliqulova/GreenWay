@@ -18,33 +18,24 @@ export class DistrictService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.district.findMany();
-    } catch (error) {
-      console.log("DistrictService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve district');
-    }
+    return await this.prismaService.district.findMany();
+
   }
 
   async findOne(id: number) {
-    try {
-      const district = await this.prismaService.district.findUnique({
-        where: { id },
-      });
+    const district = await this.prismaService.district.findUnique({
+      where: { id },
+    });
 
-      if (!district) {
-        throw new NotFoundException('district not found');
-      }
-
-      return district;
-    } catch (error) {
-      console.log("districtService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve district');
+    if (!district) {
+      throw new NotFoundException('district not found');
     }
+
+    return district;
+
   }
 
- async update(id: number, updateDistrictDto: UpdateDistrictDto) {
+  async update(id: number, updateDistrictDto: UpdateDistrictDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.district.update({ where: { id }, data: { ...updateDistrictDto } });
@@ -56,13 +47,7 @@ export class DistrictService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.district.delete({ where: { id } });
-    } catch (error) {
-      console.log("DistrictService remove:", error);
-
-      throw new InternalServerErrorException('Failed to delete district');
-    }
+    await this.findOne(id);
+    return await this.prismaService.district.delete({ where: { id } });
   }
 }

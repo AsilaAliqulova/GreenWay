@@ -8,12 +8,8 @@ export class UserVotesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createUserVoteDto: CreateUserVoteDto) {
-    try {
       return await this.prismaService.userVotes.create({ data: { ...createUserVoteDto } });
-    } catch (error) {
-      console.log("UserVotesService create error:", error);
-      throw new InternalServerErrorException('Failed to create user vote');
-    }
+   
   }
 
   async findAll() {

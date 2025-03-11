@@ -18,34 +18,25 @@ export class ProductService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.product.findMany();
-    } catch (error) {
-      console.log("ProductService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve product');
-    }
+    return await this.prismaService.product.findMany();
+
   }
 
   async findOne(id: number) {
-    try {
-      const product = await this.prismaService.product.findUnique({
-        where: { id },
-      });
+    const product = await this.prismaService.product.findUnique({
+      where: { id },
+    });
 
-      if (!product) {
-        throw new NotFoundException('product not found');
-      }
-
-      return product;
-    } catch (error) {
-      console.log("productService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve product');
+    if (!product) {
+      throw new NotFoundException('product not found');
     }
+
+    return product;
+
   }
 
 
- async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: number, updateProductDto: UpdateProductDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.product.update({ where: { id }, data: { ...updateProductDto } });
@@ -57,13 +48,8 @@ export class ProductService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.product.delete({ where: { id } });
-    } catch (error) {
-      console.log("ProductService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.product.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete product');
-    }
   }
 }

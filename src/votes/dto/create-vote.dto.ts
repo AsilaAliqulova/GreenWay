@@ -13,7 +13,7 @@ export class CreateVoteDto {
     description: string;
 
     @ApiProperty({ example: '2025-06-30' })
-    @IsDateString()
+    @IsString()
     @IsNotEmpty()
     endDate: string;
 

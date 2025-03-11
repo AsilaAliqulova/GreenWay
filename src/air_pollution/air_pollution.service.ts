@@ -18,30 +18,23 @@ export class AirPollutionService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.airPollution.findMany();
-    } catch (error) {
-      console.log("AirPollutionsService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve air pollution');
-    }
+
+    return await this.prismaService.airPollution.findMany();
+
   }
 
   async findOne(id: number) {
-    try {
-      const airPollution = await this.prismaService.airPollution.findUnique({
-        where: { id },
-      });
 
-      if (!airPollution) {
-        throw new NotFoundException('airPollution not found');
-      }
+    const airPollution = await this.prismaService.airPollution.findUnique({
+      where: { id },
+    });
 
-      return airPollution;
-    } catch (error) {
-      console.log("airPollutionService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve air pollution');
+    if (!airPollution) {
+      throw new NotFoundException('airPollution not found');
     }
+
+    return airPollution;
+
   }
 
   async update(id: number, updateAirPollutionDto: UpdateAirPollutionDto) {
@@ -56,13 +49,8 @@ export class AirPollutionService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.airPollution.delete({ where: { id } });
-    } catch (error) {
-      console.log("airPollutionService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.airPollution.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete airPollution');
-    }
   }
 }

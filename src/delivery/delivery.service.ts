@@ -18,16 +18,11 @@ export class DeliveryService {
   }
 
   async findAll() {
-    try {
       return await this.prismaService.delivery.findMany({ include: { order: true } });
-    } catch (error) {
-      console.log("DeliveryService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve delivery');
-    }
+    
   }
 
   async findOne(id: number) {
-    try {
       const delivery = await this.prismaService.delivery.findUnique({
         where: { id },
         include: { order: true }
@@ -38,11 +33,7 @@ export class DeliveryService {
       }
 
       return delivery;
-    } catch (error) {
-      console.log("deliveryService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve delivery');
-    }
+  
   }
 
   async update(id: number, updateDeliveryDto: UpdateDeliveryDto) {
@@ -57,13 +48,8 @@ export class DeliveryService {
   }
 
   async remove(id: number) {
-    try {
       await this.findOne(id);
       return await this.prismaService.delivery.delete({ where: { id } });
-    } catch (error) {
-      console.log("DeliverysService remove:", error);
-
-      throw new InternalServerErrorException('Failed to delete delivery');
-    }
+   
   }
 }

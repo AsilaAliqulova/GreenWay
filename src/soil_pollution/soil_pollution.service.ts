@@ -18,31 +18,22 @@ export class SoilPollutionService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.soilPollution.findMany({ include: { district: { select: { name: true } } } });
-    } catch (error) {
-      console.log("SoilPollutionService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve soil pollution');
-    }
+    return await this.prismaService.soilPollution.findMany({ include: { district: { select: { name: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const soilPollution = await this.prismaService.soilPollution.findUnique({
-        where: { id },
-        include: { district: { select: { name: true } } }
-      });
+    const soilPollution = await this.prismaService.soilPollution.findUnique({
+      where: { id },
+      include: { district: { select: { name: true } } }
+    });
 
-      if (!soilPollution) {
-        throw new NotFoundException('soilPollution not found');
-      }
-
-      return soilPollution;
-    } catch (error) {
-      console.log("soilPollutionService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve soil pollution');
+    if (!soilPollution) {
+      throw new NotFoundException('soilPollution not found');
     }
+
+    return soilPollution;
+
   }
 
 
@@ -58,13 +49,8 @@ export class SoilPollutionService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.soilPollution.delete({ where: { id } });
-    } catch (error) {
-      console.log("SoilPollutionService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.soilPollution.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete soil pollution');
-    }
   }
 }

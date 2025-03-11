@@ -26,7 +26,7 @@ export class CreateSoilPollutionDto {
   @ApiProperty({
     example: '2025-03-09',
   })
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
-  date: Date;
+  date: string;
 }

@@ -18,34 +18,25 @@ export class OrderItemService {
   }
 
   async findAll() {
-    try {
-      return await this.prismaService.orderItems.findMany({ include: { order: { select: { total_price: true, status: true } }, product: { select: { name: true, price: true } } } });
-    } catch (error) {
-      console.log("OrderItemService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve order items');
-    }
+    return await this.prismaService.orderItems.findMany({ include: { order: { select: { total_price: true, status: true } }, product: { select: { name: true, price: true } } } });
+
   }
 
   async findOne(id: number) {
-    try {
-      const orderItems = await this.prismaService.orderItems.findUnique({
-        where: { id },
-        include: { order: { select: { total_price: true, status: true } }, product: { select: { name: true, price: true } } }
-      });
+    const orderItems = await this.prismaService.orderItems.findUnique({
+      where: { id },
+      include: { order: { select: { total_price: true, status: true } }, product: { select: { name: true, price: true } } }
+    });
 
-      if (!orderItems) {
-        throw new NotFoundException('orderItems not found');
-      }
-
-      return orderItems;
-    } catch (error) {
-      console.log("orderItemsService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve orderItems');
+    if (!orderItems) {
+      throw new NotFoundException('orderItems not found');
     }
+
+    return orderItems;
+
   }
 
- async update(id: number, updateOrderItemDto: UpdateOrderItemDto) {
+  async update(id: number, updateOrderItemDto: UpdateOrderItemDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.orderItems.update({ where: { id }, data: { ...updateOrderItemDto } });
@@ -57,13 +48,8 @@ export class OrderItemService {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.orderItems.delete({ where: { id } });
-    } catch (error) {
-      console.log("orderItemService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.orderItems.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete order item');
-    }
   }
 }

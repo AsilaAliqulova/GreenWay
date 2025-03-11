@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class LikeService {
   constructor(private readonly prismaService: PrismaService) { }
 
- async create(createLikeDto: CreateLikeDto) {
+  async create(createLikeDto: CreateLikeDto) {
     try {
       return await this.prismaService.like.create({ data: { ...createLikeDto } });
     } catch (error) {
@@ -17,36 +17,27 @@ export class LikeService {
     }
   }
 
- async findAll() {
-    try {
-      return await this.prismaService.like.findMany({ include: { user: { select: { fullname: true } } ,ecoReport: { select: { title: true } } } });
-    } catch (error) {
-      console.log("LikeService findAll :", error);
-      throw new InternalServerErrorException('Failed to retrieve like');
-    }
+  async findAll() {
+    return await this.prismaService.like.findMany({ include: { user: { select: { fullname: true } }, ecoReport: { select: { title: true } } } });
+
   }
 
 
   async findOne(id: number) {
-    try {
-      const like = await this.prismaService.like.findUnique({
-        where: { id },
-        include: { user: { select: { fullname: true } },ecoReport:{select:{title:true}} }
-      });
+    const like = await this.prismaService.like.findUnique({
+      where: { id },
+      include: { user: { select: { fullname: true } }, ecoReport: { select: { title: true } } }
+    });
 
-      if (!like) {
-        throw new NotFoundException('like not found');
-      }
-
-      return like;
-    } catch (error) {
-      console.log("LikeService findOne:", error);
-
-      throw new InternalServerErrorException('Failed to retrieve like');
+    if (!like) {
+      throw new NotFoundException('like not found');
     }
+
+    return like;
+
   }
 
-async  update(id: number, updateLikeDto: UpdateLikeDto) {
+  async update(id: number, updateLikeDto: UpdateLikeDto) {
     try {
       await this.findOne(id);
       return await this.prismaService.like.update({ where: { id }, data: { ...updateLikeDto } });
@@ -58,13 +49,8 @@ async  update(id: number, updateLikeDto: UpdateLikeDto) {
   }
 
   async remove(id: number) {
-    try {
-      await this.findOne(id);
-      return await this.prismaService.like.delete({ where: { id } });
-    } catch (error) {
-      console.log("LikeService remove:", error);
+    await this.findOne(id);
+    return await this.prismaService.like.delete({ where: { id } });
 
-      throw new InternalServerErrorException('Failed to delete like');
-    }
   }
 }

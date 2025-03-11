@@ -3,7 +3,6 @@ import { IsString, IsEmail, Matches } from 'class-validator';
 
 export class CreateAdminDto {
 
-
     @ApiProperty({
         example: 'John Doe',
     })
@@ -14,7 +13,6 @@ export class CreateAdminDto {
         example: '+998901234567',
     })
     @IsString()
-    @Matches(/^\+?[1-9]\d{1,14}$/)
     phone: string;
 
     @ApiProperty({
@@ -23,10 +21,6 @@ export class CreateAdminDto {
     @IsEmail()
     email: string;
 
-    @ApiProperty({
-        example: 'http://example.com/image.jpg',
-    })
-    image_url: string;
 
     @ApiProperty({
         example: 'strong_password',
@@ -38,7 +32,7 @@ export class CreateAdminDto {
         example: 'strong_password',
     })
     @IsString()
-    readonly confirm_password: string
+    confirm_password: string
 
 
 }
