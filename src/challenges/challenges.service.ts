@@ -2,14 +2,19 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { FileService } from '../file/file.service';
 
 @Injectable()
 export class ChallengesService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService,
+    private readonly fileService: FileService
 
-  async create(createChallengeDto: CreateChallengeDto) {
+  ) { }
+
+  async create(createChallengeDto: CreateChallengeDto, image_url: Express.Multer.File) {
     try {
-      return await this.prismaService.challenges.create({ data: { ...createChallengeDto } });
+      const fileName = await this.fileService.saveFile(image_url);
+      return await this.prismaService.challenges.create({ data: { ...createChallengeDto, image_url: fileName } });
     } catch (error) {
       console.log("ChallengesService create:", error);
 

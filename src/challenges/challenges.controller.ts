@@ -1,15 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('challenges')
 export class ChallengesController {
-  constructor(private readonly challengesService: ChallengesService) {}
+  constructor(private readonly challengesService: ChallengesService) { }
 
   @Post()
-  create(@Body() createChallengeDto: CreateChallengeDto) {
-    return this.challengesService.create(createChallengeDto);
+  @UseInterceptors(FileInterceptor("image_url"))
+  create(@Body() createChallengeDto: CreateChallengeDto, @UploadedFile() image_url: Express.Multer.File) {
+    return this.challengesService.create(createChallengeDto, image_url);
   }
 
   @Get()

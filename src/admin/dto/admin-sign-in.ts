@@ -4,18 +4,6 @@ import { IsString, IsEmail, Matches } from 'class-validator';
 export class SignInAdminDto {
 
     @ApiProperty({
-        example: 'John Doe',
-    })
-    @IsString()
-    fullname: string;
-
-    @ApiProperty({
-        example: '+998901234567',
-    })
-    @IsString()
-    phone: string;
-
-    @ApiProperty({
         example: 'admin@example.com',
     })
     @IsEmail()
@@ -27,10 +15,5 @@ export class SignInAdminDto {
     })
     @IsString()
     password: string;
-
-    @ApiProperty({
-        example: 'strong_password',
-    })
-    @IsString()
-    confirm_password: string
 }
+

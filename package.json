@@ -31,6 +31,8 @@
     "@nestjs/typeorm": "^11.0.0",
     "@prisma/client": "^6.4.1",
     "@types/bcrypt": "^5.0.2",
+    "@types/multer-s3": "^3.0.3",
+    "aws-sdk": "^2.1692.0",
     "axios": "^1.8.1",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
@@ -41,13 +43,18 @@
     "dotenv": "^16.4.7",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.8",
+    "multer": "^1.4.5-lts.1",
+    "nest-winston": "^1.10.2",
+    "nestjs-telegraf": "^2.8.1",
     "nodemailer": "^6.10.0",
     "otp-generator": "^4.0.1",
     "pg": "^8.13.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "telegraf": "^4.16.3",
     "typeorm": "^0.3.21",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

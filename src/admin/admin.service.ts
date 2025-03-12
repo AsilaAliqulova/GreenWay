@@ -44,7 +44,7 @@ export class AdminService {
   async findOne(id: number) {
     try {
       const admin = await this.prismaService.admin.findUnique({
-        where: { id },
+        where: { id: Number(id) },
       });
 
       if (!admin) {

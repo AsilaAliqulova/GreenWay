@@ -2,14 +2,19 @@ import { Injectable, NotFoundException, InternalServerErrorException } from '@ne
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { FileService } from '../file/file.service';
 
 @Injectable()
 export class EventService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService,
+    private readonly fileService: FileService
 
-  async create(createEventDto: CreateEventDto) {
+  ) { }
+
+  async create(createEventDto: CreateEventDto, image_url: Express.Multer.File) {
     try {
-      return await this.prismaService.event.create({ data: { ...createEventDto } });
+      const fileName = await this.fileService.saveFile(image_url);
+      return await this.prismaService.event.create({ data: { ...createEventDto, image_url: fileName } });
     } catch (error) {
       console.log("EventService create error:", error);
       throw new InternalServerErrorException('Failed to create event');

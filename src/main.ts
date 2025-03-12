@@ -3,35 +3,23 @@ import { AppModule } from "./app.module";
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as cookieParser from "cookie-parser";
+import { WinstonModule } from "nest-winston";
+import { winstonConfig } from "./logger/winston-logger";
+import { AllExceptionsFilter } from "./logger/error.handling";
 
 async function start() {
   try {
     const PORT = process.env.PORT ?? 3003;
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      logger: WinstonModule.createLogger(winstonConfig)
+    });
+
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe());
     app.setGlobalPrefix("api");
-    // app.enableCors({
-    //   origin: (origin, callback) => {
-    //     const allowedOrigins = [
-    //       "http://localhost:8000",
-    //       "http://localhost:3000",
-    //       "https://ecoway.uz",
-    //       "http://api.ecoway.uz",
-    //       "https://ecoway.vercal.app",
-    //     ];
-    //     if (!origin || allowedOrigins.includes(origin)) {
-    //       console.log(origin);
-          
-    //       callback(null, true,undefined);
+    app.useGlobalFilters(new AllExceptionsFilter)
 
-    //     } else {
-    //       callback(new BadRequestException("Not allowed by CORS"));
-    //     }
-    //   },
-    //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    //   credentials: true,
-    // });
+   
 
     const config = new DocumentBuilder()
       .addBearerAuth(

@@ -17,13 +17,13 @@ export class CreateUserDto {
     @ApiProperty({
         example: 'admin@example.com',
     })
-    @IsEmail()
     email: string;
+
+
 
     @ApiProperty({
         example: 'admin@example.com',
     })
-    @IsEmail()
     image_url: string;
 
     @ApiProperty({

@@ -1,28 +1,32 @@
-import { Controller, Post, Body, Param, HttpCode, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Param, HttpCode, Res, HttpStatus, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto, SignInUserDto } from '../user/dto';
 import { Response } from 'express';
 import { CookieGetter } from '../decorators/cookie_getter.decorator';
-import { CreateAdminDto, SignInAdminDto } from '../admin/dto';
+import { SignInAdminDto } from '../admin/dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtSelfGuard } from '../guards/jst-self.guard';
 
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @ApiOperation({ summary: "Yangi foydalanuvchi ro'yhatdan o'tqazish" })
+  @ApiOperation({ summary: "New User Registration" })
   @ApiResponse({
     status: 201,
-    description: "Ro'yhatdan o'tgan foydalanuvchi",
+    description: "Registered user",
     type: String,
   })
+  @UseGuards(JwtSelfGuard)
   @Post("signup-user")
-  async signUp(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto);
+    @UseInterceptors(FileInterceptor("image_url"))
+  async signUp(@Body() createUserDto: CreateUserDto,@UploadedFile() image_url: Express.Multer.File) {
+    return this.authService.signUp(createUserDto,image_url);
   }
 
-  @ApiOperation({ summary: "Tizimga kirish" })
+  @ApiOperation({ summary: "Log in" })
   @HttpCode(HttpStatus.OK)
   @Post("signIn-user")
   async signIn(
@@ -52,7 +56,7 @@ export class AuthController {
     return this.authService.refreshToken(id, refreshToken, res);
   }
 
-  @ApiOperation({ summary: "Tizimga kirish" })
+  @ApiOperation({ summary: "Log in" })
   @HttpCode(HttpStatus.OK)
   @Post("signIn-admin")
   async signInAdmin(
@@ -63,12 +67,22 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Post("signout-user")
+  @Post("signout-admin")
   async signOutAdmin(
     @CookieGetter("refresh_token") refreshToken: string,
     @Res({ passthrough: true }) res: Response
   ) {
     return this.authService.signOutAdmin(refreshToken, res);
+  }
+
+  @HttpCode(200)
+  @Post(":id/refresh-admin")
+  refreshAdmin(
+    @Param("id") id: number,
+    @CookieGetter("refresh_token") refreshToken: string,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    return this.authService.refreshTokenAdmin(id, refreshToken, res);
   }
 
   // @ApiOperation({ summary: "Yangi adminni ro'yhatdan o'tqazish" })

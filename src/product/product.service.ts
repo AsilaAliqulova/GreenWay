@@ -2,14 +2,19 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { FileService } from '../file/file.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService,
+        private readonly fileService: FileService
+    
+  ) { }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, image_url: Express.Multer.File) {
     try {
-      return await this.prismaService.product.create({ data: { ...createProductDto } });
+      const fileName = await this.fileService.saveFile(image_url);
+      return await this.prismaService.product.create({ data: { ...createProductDto,image_url:fileName } });
     } catch (error) {
       console.log("ProductService create:", error);
 

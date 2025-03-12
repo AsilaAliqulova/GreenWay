@@ -21,9 +21,9 @@ model Admin {
   hashedPassword String
   hashedToken    String?
 
-  is_creator Boolean @default(false)
-
-  content Content[]
+  is_creator Boolean   @default(false)
+  is_active  Boolean   @default(true)
+  content    Content[]
 
   @@map("admin")
 }
@@ -37,7 +37,8 @@ model User {
   hashedPassword  String
   hashedToken     String?
   is_active       Boolean @default(false)
-  // activation_link String
+  activation_link String? 
+  balance      Int  @default(0)
 
   ecoReport      EcoReport[]
   userVotes      UserVotes[]
@@ -51,11 +52,11 @@ model User {
 }
 
 model Otp {
-  id              Int      @id @default(autoincrement())
-  phone           String
+   id             String   @id @default(uuid())
   otp             String
   expiration_time DateTime
   verified        Boolean  @default(false)
+
   @@map("otp")
 }
 
@@ -190,7 +191,7 @@ model Participations {
 
 model Like {
   id          Int       @id @default(autoincrement())
-  userId      Int
+  userId      Int       @unique
   ecoReportId Int
   createdAt   DateTime  @default(now())
   updated     DateTime  @updatedAt
@@ -271,7 +272,7 @@ model Delivery {
   address         String
   delivery_method String
   delivery_status String
-  delivery_date   DateTime
+  delivery_date   String
   delivery_cost   Float
   createdAt       DateTime @default(now())
   updated         DateTime @updatedAt

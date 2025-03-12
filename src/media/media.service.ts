@@ -2,14 +2,19 @@ import { Injectable, NotFoundException, InternalServerErrorException } from '@ne
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { FileService } from '../file/file.service';
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService,
+    private readonly fileService: FileService
 
-  async create(createMediaDto: CreateMediaDto) {
+  ) { }
+
+  async create(createMediaDto: CreateMediaDto, url: Express.Multer.File) {
     try {
-      return await this.prismaService.media.create({ data: { ...createMediaDto } });
+      const fileName = await this.fileService.saveFile(url);
+      return await this.prismaService.media.create({ data: { ...createMediaDto, url: fileName } });
     } catch (error) {
       console.log("MediaService create error:", error);
       throw new InternalServerErrorException('Failed to create media');

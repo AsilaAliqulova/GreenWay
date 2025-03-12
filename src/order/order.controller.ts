@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService) { }
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  async create(@Body() createOrderDto: CreateOrderDto) {
+    try {
+      const order = await this.orderService.createOrder(createOrderDto.userId, createOrderDto.total_price);
+      return { success: true, order };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Get()
@@ -31,4 +36,6 @@ export class OrderController {
   remove(@Param('id') id: string) {
     return this.orderService.remove(+id);
   }
+
+  
 }

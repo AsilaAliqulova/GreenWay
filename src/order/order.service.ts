@@ -53,4 +53,32 @@ export class OrderService {
     return await this.prismaService.order.delete({ where: { id } });
 
   }
+
+  async createOrder(userId: number, total_price: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: { balance: true },
+    });
+
+    if (!user || user.balance < total_price) {
+      throw new Error('Insufficient balance');
+    }
+
+    return this.prismaService.$transaction([
+      this.prismaService.order.create({
+        data: {
+          userId: userId,
+          total_price: total_price,
+          status: 'PENDING',
+        },
+      }),
+      this.prismaService.user.update({
+        where: { id: userId },
+        data: {
+          balance: { decrement: total_price }, 
+        },
+      }),
+    ]);
+  }
+  
 }

@@ -34,7 +34,7 @@ export class CreateDeliveryDto {
   @ApiProperty({
     example: '2025-07-21',
   })
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
   delivery_date: string;
 

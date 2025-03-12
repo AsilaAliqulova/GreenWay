@@ -2,31 +2,44 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { FileService } from '../file/file.service';
+import { MailService } from '../mail/mail.service';
+import * as uuid from "uuid";
 
 
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly prismaService: PrismaService
-  ) { }
-  async create(createUserDto: CreateUserDto) {
-    try {
-      const { password, confirm_password, ...data } = createUserDto
-      if (password != confirm_password) {
-        throw new BadRequestException("passwords are not the same")
-      }
-      const hashedPassword = await bcrypt.hash(password, 7);
-      const newUser = await this.prismaService.user.create({
-        data: { ...data, hashedPassword }
-      })
-      return newUser
-    } catch (error) {
-      console.log("UserService create:", error);
-      throw new InternalServerErrorException('Failed to create user');
+    private readonly prismaService: PrismaService,
+    private readonly fileService: FileService,
+    private readonly mailService: MailService,
 
+  ) { }
+  async create(createUserDto: CreateUserDto, image_url: Express.Multer.File) {
+    try {
+      const candidate = await this.findUserByEmail(createUserDto.email);
+      if (candidate) {
+        throw new BadRequestException("There is such a user");
+      }
+      const { password, ...data } = createUserDto;
+      const hashPassword = await bcrypt.hash(password, 7);
+      const activation_link = uuid.v4();
+
+      const newSeller = await this.prismaService.user.create({
+        data: {
+          ...data,
+          hashedPassword: hashPassword,
+          activation_link: activation_link,
+        },
+      });
+
+      return newSeller;
+    } catch (error) {
+      console.log("createUser", error);
     }
   }
+
 
   findAll() {
     return this.prismaService.user.findMany();
@@ -34,7 +47,7 @@ export class UserService {
 
   async findOne(id: number) {
     const user = await this.prismaService.user.findUnique({
-      where: { id },
+      where: { id: Number(id) },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -73,10 +86,13 @@ export class UserService {
   }
 
   async findUserByEmail(email: string) {
+    console.log("email", email)
     const user = await this.prismaService.user.findUnique({ where: { email } })
+    console.log(user)
     return user
-
   }
+
+
 
   async updateRefreshToken(id: number, hashed_refresh_token: string | null) {
     const updateUser = await this.prismaService.user.update({
@@ -86,11 +102,33 @@ export class UserService {
     return updateUser;
   }
 
-  async activateUser(id: number) {
-    return this.prismaService.user.update({
-      where: { id },
+
+  async activate(link: string) {
+    if (!link) {
+      throw new BadRequestException('Activation link not found');
+    }
+
+    const user = await this.prismaService.user.findFirst({
+      where: { activation_link: link },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid activation link');
+    }
+
+    if (user.is_active) {
+      throw new BadRequestException('User already activated');
+    }
+
+    const updatedUser = await this.prismaService.user.update({
+      where: { id: user.id },
       data: { is_active: true },
     });
+
+    return {
+      message: 'User activated successfully',
+      user: updatedUser.is_active,
+    };
   }
 
 }
