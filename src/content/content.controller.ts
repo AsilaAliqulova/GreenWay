@@ -3,38 +3,44 @@ import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { JwtCreatorGuard } from '../guards/jwt-creator.guard';
+import { Roles } from '../decorators/roles-auth.decorator';
+import { RolesGuard } from '../guards/role.guard';
 
 @Controller('content')
 export class ContentController {
   constructor(private readonly contentService: ContentService) { }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Post()
-  @UseGuards(JwtAuthGuard, JwtCreatorGuard)
   create(@Body() createContentDto: CreateContentDto) {
     return this.contentService.create(createContentDto);
   }
 
-  @Get()
   @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  @Get()
   findAll() {
     return this.contentService.findAll();
   }
 
-  @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.contentService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, JwtCreatorGuard)
   update(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto) {
     return this.contentService.update(+id, updateContentDto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, JwtCreatorGuard)
   remove(@Param('id') id: string) {
     return this.contentService.remove(+id);
   }

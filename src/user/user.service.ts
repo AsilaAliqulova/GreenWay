@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateAdminDto, CreateUserDto, UpdateUserDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { FileService } from '../file/file.service';
@@ -39,6 +39,36 @@ export class UserService {
       console.log("createUser", error);
     }
   }
+
+  async createAdmin(createUserDto: CreateAdminDto) {
+    try {
+      const candidate = await this.findUserByEmail(createUserDto.email);
+      if (candidate) {
+        throw new BadRequestException("There is such a user");
+      }
+  
+      const { password, confirm_password, ...data } = createUserDto;
+  
+      if (password !== confirm_password) {
+        throw new BadRequestException("Passwords do not match");
+      }
+  
+      const hashPassword = await bcrypt.hash(password, 7);
+  
+      const newSeller = await this.prismaService.user.create({
+        data: {
+          ...data,
+          hashedPassword: hashPassword
+        },
+      });
+  
+      return newSeller;
+    } catch (error) {
+      console.error("createUser ERROR:", error);
+      throw new InternalServerErrorException("Failed to create user");
+    }
+  }
+  
 
 
   findAll() {
@@ -129,6 +159,15 @@ export class UserService {
       message: 'User activated successfully',
       user: updatedUser.is_active,
     };
+  }
+
+
+  async getAllAdmins() {
+    return this.prismaService.user.findMany({
+      where: {
+        role: "admin"
+      },
+    });
   }
 
 }

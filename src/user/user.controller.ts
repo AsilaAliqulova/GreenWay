@@ -4,7 +4,8 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtSelfGuard } from '../guards/jst-self.guard';
+import { Roles } from '../decorators/roles-auth.decorator';
+import { RolesGuard } from '../guards/role.guard';
 
 
 
@@ -18,24 +19,39 @@ export class UserController {
     return this.userService.create(createUserDto, image_url);
   }
 
-
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Get()
-  // @UseGuards(JwtAuthGuard)
   findAll() {
     return this.userService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('admin')
+  async getAdmins() {
+    return this.userService.getAllAdmins();
+  }
+
+  @Post("admin")
+  createAdmin(@Body() createAdminDto: CreateUserDto,) {
+    return this.userService.createAdmin(createAdminDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
-  @UseGuards(JwtSelfGuard)
+  @UseGuards()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
@@ -50,4 +66,6 @@ export class UserController {
   activate(@Param("link") link: string) {
     return this.userService.activate(link);
   }
+
+
 }

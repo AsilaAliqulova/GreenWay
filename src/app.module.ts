@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from "./prisma/prisma.module";
-import { AdminModule } from './admin/admin.module';
 import { UserModule } from './user/user.module';
 import { OrganizationModule } from './organization/organization.module';
 import { ContentModule } from './content/content.module';
@@ -30,8 +29,8 @@ import { OtpModule } from './otp/otp.module';
 
 
 @Module({
-  imports:[ConfigModule.forRoot({envFilePath: ".env", isGlobal:true}),PrismaModule, AdminModule, UserModule, OrganizationModule, ContentModule, MediaModule, EcoReportModule, VotesModule, UserVotesModule, EventModule, ChallengesModule, ParticipationsModule, LikeModule, CommentsModule, CoinModule, OrderModule, ProductModule, DeliveryModule, OrderItemModule, RegionModule, DistrictModule, AirPollutionModule, WaterPollutionModule, SoilPollutionModule, AuthModule, OtpModule],
+  imports: [ConfigModule.forRoot({ envFilePath: ".env", isGlobal: true }), PrismaModule, UserModule, OrganizationModule, ContentModule, MediaModule, EcoReportModule, VotesModule, UserVotesModule, EventModule, ChallengesModule, ParticipationsModule, LikeModule, CommentsModule, CoinModule, OrderModule, ProductModule, DeliveryModule, OrderItemModule, RegionModule, DistrictModule, AirPollutionModule, WaterPollutionModule, SoilPollutionModule, AuthModule, OtpModule],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

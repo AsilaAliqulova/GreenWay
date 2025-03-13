@@ -5,14 +5,23 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { Observable } from "rxjs";
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private readonly jwtservice: JwtService) { }
+
+  constructor(private readonly jwtservice: JwtService, private readonly reflector: Reflector) { }
   canActivate(
     context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  ): boolean | Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
 
     const req = context.switchToHttp().getRequest();
     const authHeader = req.headers.authorization;

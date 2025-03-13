@@ -1,8 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, Matches } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString } from "class-validator";
 
 export class CreateAdminDto {
-
     @ApiProperty({
         example: 'John Doe',
     })
@@ -18,9 +17,7 @@ export class CreateAdminDto {
     @ApiProperty({
         example: 'admin@example.com',
     })
-    @IsEmail()
     email: string;
-
 
     @ApiProperty({
         example: 'strong_password',
@@ -33,6 +30,5 @@ export class CreateAdminDto {
     })
     @IsString()
     confirm_password: string
-
 
 }

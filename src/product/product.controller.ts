@@ -4,40 +4,43 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { JwtCreatorGuard } from '../guards/jwt-creator.guard';
+import { Roles } from '../decorators/roles-auth.decorator';
+import { RolesGuard } from '../guards/role.guard';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Post()
-  @UseGuards(JwtAuthGuard, JwtCreatorGuard)
   @UseInterceptors(FileInterceptor("image_url"))
   create(@Body() createProductDto: CreateProductDto, @UploadedFile() image_url: Express.Multer.File) {
     return this.productService.create(createProductDto, image_url);
   }
 
-  @Get()
   @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  @Get()
   findAll() {
     return this.productService.findAll();
   }
-
-  @Get(':id')
   @UseGuards(JwtAuthGuard)
-
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, JwtCreatorGuard)
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, JwtCreatorGuard)
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }

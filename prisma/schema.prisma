@@ -13,19 +13,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin {
-  id             Int     @id @default(autoincrement())
-  fullname       String
-  phone          String
-  email          String  @unique
-  hashedPassword String
-  hashedToken    String?
-
-  is_creator Boolean   @default(false)
-  is_active  Boolean   @default(true)
-  content    Content[]
-
-  @@map("admin")
+enum Role {
+  user
+  admin
 }
 
 model User {
@@ -33,12 +23,13 @@ model User {
   fullname        String
   phone           String
   email           String  @unique
-  image_url       String
+  image_url       String?
   hashedPassword  String
   hashedToken     String?
   is_active       Boolean @default(false)
-  activation_link String? 
-  balance      Int  @default(0)
+  activation_link String?
+  balance         Int     @default(0)
+  role            Role    @default(user)
 
   ecoReport      EcoReport[]
   userVotes      UserVotes[]
@@ -47,12 +38,13 @@ model User {
   comments       Comments[]
   coins          Coins[]
   order          Order[]
+  Content        Content[]
 
   @@map("user")
 }
 
 model Otp {
-   id             String   @id @default(uuid())
+  id              String   @id @default(uuid())
   otp             String
   expiration_time DateTime
   verified        Boolean  @default(false)
@@ -83,7 +75,7 @@ model Content {
   adminId     Int
   createdAt   DateTime @default(now())
   updated     DateTime @updatedAt
-  admin       Admin    @relation(fields: [adminId], references: [id])
+  admin       User     @relation(fields: [adminId], references: [id])
   media       Media    @relation(fields: [mediaId], references: [id])
 
   @@map("content")
