@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +13,8 @@ export class ProductService {
 
   async create(createProductDto: CreateProductDto, image_url: Express.Multer.File) {
     try {
+     if (!image_url) throw new BadRequestException("The file is incorrect or empty");
+      
       const fileName = await this.fileService.saveFile(image_url);
       return await this.prismaService.product.create({ data: { ...createProductDto,image_url:fileName } });
     } catch (error) {

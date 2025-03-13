@@ -19,14 +19,12 @@ export class CreateProductDto {
     @ApiProperty({
         example: 99,
     })
-    @IsNumber()
     @IsNotEmpty()
-    price: number;
+    price: string;
 
     @ApiProperty({
         example: 'https://example.com/image.jpg',
     })
-    @IsUrl()
-    @IsNotEmpty()
+    // @IsNotEmpty()
     image_url: string;
 }

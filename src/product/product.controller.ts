@@ -15,7 +15,7 @@ export class ProductController {
   @Roles('admin')
   @Post()
   @UseInterceptors(FileInterceptor("image_url"))
-  create(@Body() createProductDto: CreateProductDto, @UploadedFile() image_url: Express.Multer.File) {
+ async create(@Body() createProductDto: CreateProductDto, @UploadedFile() image_url: Express.Multer.File) {
     return this.productService.create(createProductDto, image_url);
   }
 
